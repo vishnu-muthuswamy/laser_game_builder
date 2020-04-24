@@ -42,6 +42,7 @@ public class LasersPTUI implements Observer<LasersModel, ModelData> {
 
     @Override
     public void update(LasersModel model, ModelData data) {
-        // TODO
+        System.out.println(data.getStatusMessage());
+        System.out.print(model);
     }
 }

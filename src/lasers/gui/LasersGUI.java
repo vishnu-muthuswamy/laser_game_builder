@@ -34,6 +34,7 @@ public class LasersGUI extends Application implements Observer<LasersModel, Mode
             Parameters params = getParameters();
             String filename = params.getRaw().get(0);
             this.model = new LasersModel(filename);
+            this.model.makeBoard();
         } catch (FileNotFoundException fnfe) {
             System.out.println(fnfe.getMessage());
             System.exit(-1);
