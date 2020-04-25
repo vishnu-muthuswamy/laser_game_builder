@@ -518,4 +518,31 @@ public class LasersModel {
 
         return numOfAdjLasers;
     }
+
+    /**
+     * This fucntion returns the game board
+     * @return - 2D string array that is a
+     * game board
+     */
+    public String[][] getBoard(){
+        return this.board;
+    }
+
+    /**
+     * This fuction gets the length of the
+     * row of the board
+     * @return - the row length
+     */
+    public int getRowDim(){
+        return this.row;
+    }
+
+    /**
+     * This function gets the length of the
+     * col of the board
+     * @return - the col length
+     */
+    public int getColDim(){
+        return this.col;
+    }
 }
