@@ -44,8 +44,12 @@ public class SafeConfig implements Configuration {
         this.rowDim = other.rowDim;
         this.row = other.row;
         this.col = other.col;
+        this.board = new String[this.rowDim][this.colDim];
         for(int r = 0; r < this.rowDim; r++){
-
+            System.arraycopy(other.board[r], 0, this.board[r], 0, this.rowDim);
+        }
+        if(this.board[this.row][this.col].equals("*") || this.board[this.row][this.col].equals(".")){
+            this.board[this.row][this.col] = "L";
         }
     }
     @Override
@@ -108,9 +112,7 @@ public class SafeConfig implements Configuration {
                 }
             }
         }
-
         return true;
-
     }
 
     @Override
