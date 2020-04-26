@@ -20,8 +20,8 @@ import java.util.List;
  * @author YOUR NAME HERE
  */
 public class SafeConfig implements Configuration {
-    private LasersModel model;
 
+    private LasersModel model;
     private int row;
     private int rowDim;
     private int col;
