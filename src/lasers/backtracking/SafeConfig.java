@@ -117,7 +117,129 @@ public class SafeConfig implements Configuration {
 
     @Override
     public boolean isGoal() {
-        return this.col == this.colDim - 1;
+        boolean pillarCheck;
+        if(this.col == this.colDim - 1){
+            for(int r = 0; r < this.rowDim; r++){
+                for(int c = 0; c < this.colDim; c++){
+                    if(!this.board[r][c].equals("L") || !this.board[r][c].equals(".") || !this.board[r][c].equals("*")){
+                        if(!pillarChecker(r,c)){
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean pillarChecker(int row, int col){
+        int pillarCount = 0;
+        if(this.board[row][col].equals("X")){
+            return true;
+        }
+        int pillarNum = Integer.parseInt(this.board[row][col]);
+        if(row == 0) {
+            if(col == 0){
+                // check below and right
+                if(this.board[row+1][col].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col+1].equals("L")){
+                    pillarCount++;
+                }
+            }
+            else if(col == this.colDim -1){
+                // check below and left
+                if(this.board[row+1][col].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col-1].equals("L")){
+                    pillarCount++;
+                }
+            }
+            else{
+                if(this.board[row+1][col].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col-1].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col-1].equals("L")){
+                    pillarCount++;
+                }
+            }
+        }
+        else if(row == this.rowDim-1){
+            if(col == 0){
+                //check above and right
+                if(this.board[row-1][col].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col+1].equals("L")){
+                    pillarCount++;
+                }
+            }
+            else if(col == this.colDim -1 ){
+                //check above and left
+                if(this.board[row-1][col].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col-1].equals("L")){
+                    pillarCount++;
+                }
+            }
+            else{
+                if(this.board[row-1][col].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col+1].equals("L")){
+                    pillarCount++;
+                }
+                if(this.board[row][col-1].equals("L")){
+                    pillarCount++;
+                }
+
+            }
+        }
+        else if(col == 0){
+            if(this.board[row-1][col].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row+1][col].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row][col+1].equals("L")){
+                pillarCount++;
+            }
+        }
+        else if(col == this.colDim-1){
+            if(this.board[row-1][col].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row+1][col].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row][col-1].equals("L")){
+                pillarCount++;
+            }
+        }
+        else{
+            //check all 4 dirs
+            if(this.board[row-1][col].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row+1][col].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row][col-1].equals("L")){
+                pillarCount++;
+            }
+            if(this.board[row][col+1].equals("L")){
+                pillarCount++;
+            }
+        }
+        return pillarCount == pillarNum;
     }
 
 }
