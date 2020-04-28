@@ -10,7 +10,7 @@ import java.io.*;
  * the operations that are input in the run method.
  *
  * @author RIT CS
- * @author YOUR NAME HERE
+ * @author Lukowski, Matthew and Muthuswamy, Vishnu
  */
 public class ControllerPTUI  {
     /** The UI's connection to the lasers.lasers.model */
