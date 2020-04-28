@@ -1,21 +1,28 @@
 package lasers.model;
 
+import javafx.application.Application;
+import lasers.backtracking.Backtracker;
+import lasers.backtracking.Configuration;
+
 import java.io.*;
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The model of the lasers safe.  You are free to change this class however
  * you wish, but it should still follow the MVC architecture.
  *
  * @author RIT CS
- * @author YOUR NAME HERE
+ * @author Lukowski, Matthew and Muthuswamy, Vishnu
  */
 public class LasersModel {
     /** the observers who are registered with this model */
     private List<Observer<LasersModel, ModelData>> observers;
 
+    private String safeFilename;
     private File safeFile;
     private BufferedReader readSafeFile;
 
@@ -24,15 +31,46 @@ public class LasersModel {
 
     private String[][] board;
 
-    public LasersModel(String filename) throws FileNotFoundException {
+    public LasersModel(String safeFilename) throws FileNotFoundException {
         this.observers = new LinkedList<>();
 
-        this.safeFile = new File(filename);
+        this.safeFilename = safeFilename;
+        this.safeFile = new File(safeFilename);
+        this.safeFilename = safeFile.getName();
         this.readSafeFile = new BufferedReader(new FileReader(safeFile));
 
         this.row = 0;
         this.col = 0;
     }
+
+    /**
+     * This function returns the game board
+     * @return - 2D string array that is a
+     * game board
+     */
+    public String[][] getBoard(){
+        return this.board;
+    }
+
+    /**
+     * This function gets the length of the
+     * row of the board
+     * @return - the row length
+     */
+    public int getRowDim(){
+        return this.row;
+    }
+
+    /**
+     * This function gets the length of the
+     * col of the board
+     * @return - the col length
+     */
+    public int getColDim(){
+        return this.col;
+    }
+
+    public String getSafeFilename() {return this.safeFilename;}
 
     /**
      * Add a new observer.
@@ -72,9 +110,35 @@ public class LasersModel {
                     this.board[r][c] = line[c];
                 }
             }
+            notifyObservers(null);
             readSafeFile.close();
         } catch (IOException ioe) {
-            notifyObservers(new ModelData(ModelData.Status.ERROR_FNF, 0, 0));
+            notifyObservers(new ModelData(ModelData.Status.ERROR_FNF, null, 0, 0));
+        }
+    }
+
+    /**
+     * This function reads from the command line and gets the dimensions
+     * for the game board and also creates the game board based on
+     * the input file for the Safe Config.
+     * @throws IOException
+     */
+    public void makeBoardSafeConfig() {
+        try {
+            String[] line = this.readSafeFile.readLine().split(" ");
+            this.row = Integer.parseInt(line[0]);
+            this.col = Integer.parseInt(line[1]);
+            this.board = new String[this.row][this.col];
+            for (int r = 0; r < this.row; r++) {
+                line = this.readSafeFile.readLine().split(" ");
+                for (int c = 0; c < this.col; c++) {
+                    this.board[r][c] = line[c];
+                }
+            }
+            readSafeFile.close();
+        } catch (IOException ioe) {
+            System.out.println(ioe.getMessage());
+            System.exit(-1);
         }
     }
 
@@ -115,7 +179,7 @@ public class LasersModel {
     public void add(int rowCoordinate, int colCoordinate) {
         if (!this.board[rowCoordinate][colCoordinate].equals(".") &&
                 !this.board[rowCoordinate][colCoordinate].equals("*")) {
-            notifyObservers(new ModelData(ModelData.Status.ERROR_ADDING, rowCoordinate, colCoordinate));
+            notifyObservers(new ModelData(ModelData.Status.ERROR_ADDING, null, rowCoordinate, colCoordinate));
             return;
         }
 
@@ -150,7 +214,7 @@ public class LasersModel {
             this.board[rowCoordinate][c] = "*";
         }
 
-        notifyObservers(new ModelData(ModelData.Status.NO_ERROR_ADDING, rowCoordinate, colCoordinate));
+        notifyObservers(new ModelData(ModelData.Status.NO_ERROR_ADDING, null, rowCoordinate, colCoordinate));
     }
 
     /**
@@ -161,7 +225,7 @@ public class LasersModel {
      */
     public void remove(int rowCoordinate, int colCoordinate){
         if(!this.board[rowCoordinate][colCoordinate].equals("L")) {
-            notifyObservers(new ModelData(ModelData.Status.ERROR_REMOVING, rowCoordinate, colCoordinate));
+            notifyObservers(new ModelData(ModelData.Status.ERROR_REMOVING, null, rowCoordinate, colCoordinate));
             return;
         }
 
@@ -170,7 +234,7 @@ public class LasersModel {
         removeNorthSouthLaserBeams(rowCoordinate, colCoordinate);
         removeWestEastLaserBeams(rowCoordinate, colCoordinate);
 
-        notifyObservers(new ModelData(ModelData.Status.NO_ERROR_REMOVING, rowCoordinate, colCoordinate));
+        notifyObservers(new ModelData(ModelData.Status.NO_ERROR_REMOVING, null, rowCoordinate, colCoordinate));
     }
 
     /**
@@ -384,14 +448,14 @@ public class LasersModel {
         for (int r = 0; r < this.row; r++) {
             for (int c = 0; c < this.col; c++) {
                 if (this.board[r][c].equals(".")) {
-                    notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                    notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                     return;
                 } else if (this.board[r][c].equals("0")) {
 
                     numOfAdjLasers = findAdjLasers(r, c);
 
                     if (numOfAdjLasers != 0) {
-                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                         return;
                     }
                 } else if (this.board[r][c].equals("1")) {
@@ -399,7 +463,7 @@ public class LasersModel {
                     numOfAdjLasers = findAdjLasers(r, c);
 
                     if (numOfAdjLasers != 1) {
-                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                         return;
                     }
                 } else if (this.board[r][c].equals("2")) {
@@ -407,7 +471,7 @@ public class LasersModel {
                     numOfAdjLasers = findAdjLasers(r, c);
 
                     if (numOfAdjLasers != 2) {
-                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                         return;
                     }
                 } else if (this.board[r][c].equals("3")) {
@@ -415,7 +479,7 @@ public class LasersModel {
                     numOfAdjLasers = findAdjLasers(r, c);
 
                     if (numOfAdjLasers != 3) {
-                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                         return;
                     }
                 } else if (this.board[r][c].equals("4")) {
@@ -423,7 +487,7 @@ public class LasersModel {
                     numOfAdjLasers = findAdjLasers(r, c);
 
                     if (numOfAdjLasers != 4) {
-                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                        notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                         return;
                     }
                 } else if (this.board[r][c].equals("L")) {
@@ -433,7 +497,7 @@ public class LasersModel {
                                 !this.board[rowCoordinate][c].equals("*")) {
                             break;
                         } else if (this.board[rowCoordinate][c].equals("L")) {
-                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                             return;
                         }
                     }
@@ -442,7 +506,7 @@ public class LasersModel {
                                 !this.board[rowCoordinate][c].equals("*")) {
                             break;
                         } else if (this.board[rowCoordinate][c].equals("L")) {
-                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                             return;
                         }
                     }
@@ -451,7 +515,7 @@ public class LasersModel {
                                 !this.board[r][colCoordinate].equals("*")) {
                             break;
                         } else if (this.board[r][colCoordinate].equals("L")) {
-                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                             return;
                         }
                     }
@@ -460,7 +524,7 @@ public class LasersModel {
                                 !this.board[r][colCoordinate].equals("*")) {
                             break;
                         } else if (this.board[r][colCoordinate].equals("L")) {
-                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, r, c));
+                            notifyObservers(new ModelData(ModelData.Status.ERROR_VERIFYING, null, r, c));
                             return;
                         }
                     }
@@ -468,7 +532,7 @@ public class LasersModel {
             }
         }
 
-        notifyObservers(new ModelData(ModelData.Status.NO_ERROR_VERIFYING, 0, 0));
+        notifyObservers(new ModelData(ModelData.Status.NO_ERROR_VERIFYING, null, 0, 0));
     }
 
     /**
@@ -519,30 +583,32 @@ public class LasersModel {
         return numOfAdjLasers;
     }
 
-    /**
-     * This fucntion returns the game board
-     * @return - 2D string array that is a
-     * game board
-     */
-    public String[][] getBoard(){
-        return this.board;
+    public void solve() {
+        try {
+            Configuration safe = new SafeConfig(safeFile.getPath());
+
+            Backtracker bt = new Backtracker(false);
+            Optional<Configuration> sol = bt.solve(safe);
+
+            if (sol.isPresent()) {
+                System.out.print(sol);
+                notifyObservers(new ModelData(ModelData.Status.SOLUTION, safeFilename, 0, 0));
+            } else {
+                notifyObservers(new ModelData(ModelData.Status.NO_SOLUTION, safeFilename, 0, 0));
+            }
+        } catch (FileNotFoundException ffe) {
+            notifyObservers(new ModelData(ModelData.Status.ERROR_FNF, null, 0, 0));
+        }
     }
 
-    /**
-     * This fuction gets the length of the
-     * row of the board
-     * @return - the row length
-     */
-    public int getRowDim(){
-        return this.row;
-    }
-
-    /**
-     * This function gets the length of the
-     * col of the board
-     * @return - the col length
-     */
-    public int getColDim(){
-        return this.col;
+    public void restart() {
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < col; c++) {
+                if (this.board[r][c].equals("L") || this.board[r][c].equals("*")) {
+                    this.board[r][c] = ".";
+                }
+            }
+        }
+        notifyObservers(new ModelData(ModelData.Status.RESTART, safeFilename, 0, 0));
     }
 }

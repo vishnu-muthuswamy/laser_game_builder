@@ -3,10 +3,10 @@
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="lasers.backtracking.SafeSolver" />
     <module name="Lasers2" />
-    <option name="PROGRAM_PARAMETERS" value="tests/text4.txt true" />
+    <option name="PROGRAM_PARAMETERS" value="tests/4x4safe.txt true" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="lasers.backtracking.*" />
+        <option name="PATTERN" value="lasers.model.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

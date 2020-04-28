@@ -12,7 +12,7 @@ import lasers.model.Observer;
  * You should create the model here, and then implement the update method.
  *
  * @author Sean Strout @ RIT CS
- * @author YOUR NAME HERE
+ * @author Lukowski, Matthew and Muthuswamy, Vishnu
  */
 public class LasersPTUI implements Observer<LasersModel, ModelData> {
     /** The UI's connection to the model */
@@ -42,7 +42,9 @@ public class LasersPTUI implements Observer<LasersModel, ModelData> {
 
     @Override
     public void update(LasersModel model, ModelData data) {
-        System.out.println(data.getStatusMessage());
+        if (data != null) {
+            System.out.println(data.getStatusMessage());
+        }
         System.out.print(model);
     }
 }
