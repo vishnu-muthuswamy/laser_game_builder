@@ -17,7 +17,7 @@ import java.util.List;
  * package and/or incorporate it into another class.
  *
  * @author RIT CS
- * @author YOUR NAME HERE
+ * @author Lukowski, Matthew and Muthuswamy, Vishnu
  */
 public class SafeConfig implements Configuration {
 
@@ -28,6 +28,11 @@ public class SafeConfig implements Configuration {
     private int colDim;
     private String[][] board;
 
+    /**
+     * Constructor for the safe config
+     * @param filename - name of the file
+     * @throws FileNotFoundException
+     */
     public SafeConfig(String filename) throws FileNotFoundException {
         this.model = new LasersModel(filename);
         this.model.makeBoard();
@@ -39,6 +44,12 @@ public class SafeConfig implements Configuration {
 
     }
 
+    /**
+     * The copied constructor used by getSuccessors()
+     * @param other - the other SafeConfig
+     * @param row - the row coord
+     * @param col - the col coord
+     */
     public SafeConfig(SafeConfig other, int row, int col) {
         this.colDim = other.colDim;
         this.rowDim = other.rowDim;
@@ -52,6 +63,12 @@ public class SafeConfig implements Configuration {
             this.board[this.row][this.col] = "L";
         }
     }
+
+    /**
+     * This function gets the successors for each row and coloum
+     * amking a new SafeConfig for each space on the board
+     * @return
+     */
     @Override
     public Collection<Configuration> getSuccessors() {
         List<Configuration> successors = new LinkedList<>();
@@ -62,6 +79,10 @@ public class SafeConfig implements Configuration {
         return successors;
     }
 
+    /**
+     * Checks if the placment of the laser is valid
+     * @return - true or false
+     */
     @Override
     public boolean isValid() {
         //Searching down
@@ -115,9 +136,14 @@ public class SafeConfig implements Configuration {
         return true;
     }
 
+    /**
+     * This function checks if a config is the goal config
+     * once it reaches the goal it checks all the pillars to see
+     * if they have the correct number of laser next to them
+     * @return
+     */
     @Override
     public boolean isGoal() {
-        boolean pillarCheck;
         if(this.col == this.colDim - 1){
             for(int r = 0; r < this.rowDim; r++){
                 for(int c = 0; c < this.colDim; c++){
@@ -133,6 +159,13 @@ public class SafeConfig implements Configuration {
         return false;
     }
 
+    /**
+     * This function checks if the pillar has the correct number
+     * of lasers around them.
+     * @param row - the row coord
+     * @param col - the col coord
+     * @return - true or false
+     */
     public boolean pillarChecker(int row, int col){
         int pillarCount = 0;
         if(this.board[row][col].equals("X")){

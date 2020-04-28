@@ -15,7 +15,7 @@ import java.util.Optional;
  * implement.
  *
  * @author RIT CS
- * @author YOUR NAME HERE
+ * @author Lukowski, Matthew and Muthuswamy, Vishnu
  */
 public class Backtracker {
 
